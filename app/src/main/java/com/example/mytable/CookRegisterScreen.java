@@ -47,7 +47,7 @@ public class CookRegisterScreen extends AppCompatActivity {
     private DatabaseReference images = database.getReference("images");
     ImageView voidChequeImage;
 
-    private List<Cook> cooks = new ArrayList<Cook>();
+    private List<String> emailList = new ArrayList<>();
 
 
     @Override
@@ -65,13 +65,14 @@ public class CookRegisterScreen extends AppCompatActivity {
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //Clearing previously stored list of cooks.
-                cooks.clear();
-                for (DataSnapshot postSnapShot : snapshot.getChildren()){
-                    //get each cook
-                    Cook cook = postSnapShot.getValue(Cook.class);
-                    //add updated cook to list
-                    cooks.add(cook);
+                //Clearing previously stored list of clients.
+                emailList.clear();
+                Iterable<DataSnapshot> usersIterable = snapshot.getChildren();
+                for (DataSnapshot postSnapShot : usersIterable){
+                    //get each email
+                    String email = postSnapShot.child("email").getValue(String.class);
+                    //add updated client to list
+                    emailList.add(email);
                 }
             }
 
@@ -126,7 +127,28 @@ public class CookRegisterScreen extends AppCompatActivity {
 
         EditText cookEmail = (EditText)findViewById(R.id.cookEmail);
         TextView cookEmailInvalid = (TextView)findViewById(R.id.cookEmailInvalid);
-        boolean emailValid = cook.setEmail(cookEmail.getText().toString().toLowerCase()); // validates email
+        boolean emailValid = false;
+        boolean emailTaken = false;
+        String error;
+        String email = cookEmail.getText().toString().toLowerCase();
+
+        if (emailList.contains(email)){
+            emailTaken = true;
+        } else{
+            emailValid = cook.setEmail(cookEmail.getText().toString().toLowerCase());
+        }
+
+        if (!emailValid) {
+            if (emailTaken){
+                error = "Email is already associated with an account.";
+            } else{
+                error = "Please enter a valid email.";
+            }
+            cookEmailInvalid.setText(error);
+            cookEmailInvalid.setVisibility(cookEmailInvalid.VISIBLE);
+        } else {
+            cookEmailInvalid.setVisibility(cookEmailInvalid.GONE);
+        }
 
         if (!emailValid) {
 
@@ -232,7 +254,7 @@ public class CookRegisterScreen extends AppCompatActivity {
         cookAddress.setPostalCode("ABC 123");
         cook.setCookAddress(cookAddress);
         cook.setUserType("Cook");
-        if(firstNameValid && lastNameValid && emailValid && passwordValid && passwordsMatch && countryValid && provinceValid && cityValid && streetNameValid && streetNumberValid) {
+        if(firstNameValid && lastNameValid && emailValid && (!emailTaken) && passwordValid && passwordsMatch && countryValid && provinceValid && cityValid && streetNameValid && streetNumberValid) {
             System.out.println("All fields valid");
             postNewCook(cook);
             Intent i = new Intent(this, MainActivity.class);

@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ClientRegisterScreen extends AppCompatActivity {
@@ -27,7 +28,7 @@ public class ClientRegisterScreen extends AppCompatActivity {
     private Address clientAddress;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dbRef = database.getReference("users");
-    private List<Client> clients = new ArrayList<Client>();
+    private List<String> emailList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +44,14 @@ public class ClientRegisterScreen extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //Clearing previously stored list of clients.
-//                clients.clear();
-//                for (DataSnapshot postSnapShot : snapshot.getChildren()){
-//                    //get each client
-//                    Client client = postSnapShot.getValue(Client.class);
-//                    //add updated client to list
-//                    clients.add(client);
-//                }
+                emailList.clear();
+                Iterable<DataSnapshot> usersIterable = snapshot.getChildren();
+                for (DataSnapshot postSnapShot : usersIterable){
+                    //get each email
+                    String email = postSnapShot.child("email").getValue(String.class);
+                    //add updated client to list
+                    emailList.add(email);
+                }
             }
 
             @Override
@@ -89,12 +91,25 @@ public class ClientRegisterScreen extends AppCompatActivity {
 
         EditText clientEmail = (EditText)findViewById(R.id.clientEmail);
         TextView clientEmailInvalid = (TextView)findViewById(R.id.clientEmailInvalid);
-        boolean emailValid = client.setEmail(clientEmail.getText().toString().toLowerCase());
+        boolean emailValid = false;
+        boolean emailTaken = false;
+        String error;
+        String email = clientEmail.getText().toString().toLowerCase();
+
+        if (emailList.contains(email)){
+            emailTaken = true;
+        } else{
+            emailValid = client.setEmail(clientEmail.getText().toString().toLowerCase());
+        }
 
         if (!emailValid) {
-
+            if (emailTaken){
+                error = "Email is already associated with an account.";
+            } else{
+                error = "Please enter a valid email.";
+            }
+            clientEmailInvalid.setText(error);
             clientEmailInvalid.setVisibility(clientEmailInvalid.VISIBLE);
-
         } else {
             clientEmailInvalid.setVisibility(clientEmailInvalid.GONE);
         }
@@ -242,7 +257,7 @@ public class ClientRegisterScreen extends AppCompatActivity {
         clientAddress.setPostalCode("ABC 123");
         client.setClientAddress(clientAddress);
         // only creates account if all fields are valid
-        if(firstNameValid && lastNameValid && emailValid && passwordValid && passwordsMatch && cardNumberValid && cardCVCValid && cardExpirationDateMonthValid && cardExpirationDateYearValid && cardHolderNameValid && countryValid && provinceValid && cityValid && streetNameValid && clientPostalCodeValid && streetNumberValid) {
+        if(firstNameValid && lastNameValid && emailValid && (!emailTaken) && passwordValid && passwordsMatch && cardNumberValid && cardCVCValid && cardExpirationDateMonthValid && cardExpirationDateYearValid && cardHolderNameValid && countryValid && provinceValid && cityValid && streetNameValid && clientPostalCodeValid && streetNumberValid) {
             postNewClient(client);
             Intent i = new Intent(this, MainActivity.class);
             startActivity(i);
