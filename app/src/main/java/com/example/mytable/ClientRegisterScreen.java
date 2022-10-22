@@ -254,7 +254,7 @@ public class ClientRegisterScreen extends AppCompatActivity {
         EditText clientUnitNumber = (EditText)findViewById(R.id.clientUnitNumber);
 
         clientAddress.setUnit(clientUnitNumber.getText().toString());
-        clientAddress.setPostalCode("ABC 123");
+
         client.setClientAddress(clientAddress);
         // only creates account if all fields are valid
         if(firstNameValid && lastNameValid && emailValid && (!emailTaken) && passwordValid && passwordsMatch && cardNumberValid && cardCVCValid && cardExpirationDateMonthValid && cardExpirationDateYearValid && cardHolderNameValid && countryValid && provinceValid && cityValid && streetNameValid && clientPostalCodeValid && streetNumberValid) {

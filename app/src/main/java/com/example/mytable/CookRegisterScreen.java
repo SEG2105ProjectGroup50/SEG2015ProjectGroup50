@@ -46,6 +46,7 @@ public class CookRegisterScreen extends AppCompatActivity {
     private DatabaseReference dbRef = database.getReference("users");
     private DatabaseReference images = database.getReference("images");
     ImageView voidChequeImage;
+    boolean photoTaken;
 
     private List<String> emailList = new ArrayList<>();
 
@@ -58,6 +59,7 @@ public class CookRegisterScreen extends AppCompatActivity {
         cook = new Cook();
         cookAddress = new Address();
         voidChequeImage = (ImageView) findViewById(R.id.voidChequeImage);
+        photoTaken = false;
     }
 
     public void onStart() {
@@ -91,12 +93,13 @@ public class CookRegisterScreen extends AppCompatActivity {
         if (requestCode == 100 && data != null) { // sets image to photo taken
             Bitmap captureImage = (Bitmap) data.getExtras().get("data");
             voidChequeImage.setImageBitmap(captureImage);
-
+            photoTaken = true;
         }
 
         if (requestCode == 200 && data != null) { // sets image to photo imported
             Uri selectedImage = data.getData();
             voidChequeImage.setImageURI(selectedImage);
+            photoTaken = true;
         }
     }
 
@@ -251,10 +254,18 @@ public class CookRegisterScreen extends AppCompatActivity {
         EditText cookUnitNumber = (EditText)findViewById(R.id.cookUnitNumber);
 
         cookAddress.setUnit(cookUnitNumber.getText().toString());
-        cookAddress.setPostalCode("ABC 123");
+
         cook.setCookAddress(cookAddress);
-        cook.setUserType("Cook");
-        if(firstNameValid && lastNameValid && emailValid && (!emailTaken) && passwordValid && passwordsMatch && countryValid && provinceValid && cityValid && streetNameValid && streetNumberValid) {
+
+        TextView photoInvalid = findViewById(R.id.photoInvalid);
+
+        if(!photoTaken) {
+            photoInvalid.setVisibility(photoInvalid.VISIBLE);
+        } else {
+            photoInvalid.setVisibility(photoInvalid.GONE);
+        }
+
+        if(firstNameValid && lastNameValid && emailValid && (!emailTaken) && passwordValid && passwordsMatch && countryValid && provinceValid && cityValid && streetNameValid && streetNumberValid && photoTaken) {
             System.out.println("All fields valid");
             postNewCook(cook);
             Intent i = new Intent(this, MainActivity.class);

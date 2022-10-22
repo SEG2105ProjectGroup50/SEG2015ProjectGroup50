@@ -312,6 +312,14 @@
                 android:layout_height="200dp"
                 tools:srcCompat="@tools:sample/avatars" />
 
+            <TextView
+                android:id="@+id/photoInvalid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Please add a photo of a void cheque."
+                android:textColor="#F44336"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -335,6 +343,7 @@
                     android:onClick="importPhoto"
                     android:text="Add from Gallery" />
             </LinearLayout>
+
             <Button
                 android:id="@+id/button"
                 android:layout_width="match_parent"
@@ -343,6 +352,8 @@
                 android:text="Complete Registration"
                 tools:layout_editor_absoluteY="932dp" />
         </LinearLayout>
+
+
 
     </ScrollView>
 
