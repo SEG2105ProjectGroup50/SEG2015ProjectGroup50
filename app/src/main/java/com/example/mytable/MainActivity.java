@@ -30,14 +30,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void registerClient(View v) {
-        Intent i = new Intent(this, ClientRegisterScreen.class);
 
-        startActivity(i);
-    }
-
-    public void registerCook(View v) {
-        Intent i = new Intent(this, CookRegisterScreen.class);
+    public void register(View v) {
+        Intent i = new Intent(this, RegisterMenuScreen.class);
 
         startActivity(i);
     }
