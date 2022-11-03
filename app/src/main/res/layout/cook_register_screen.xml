@@ -5,6 +5,7 @@
     android:id="@+id/buttoncookRegister"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_main"
     tools:context=".CookRegisterScreen">
 
     <ScrollView
@@ -15,6 +16,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/clientregistertitle"
+                android:text="Create account"
+                android:textColor="@color/white"
+                android:textSize="35dp"
+                android:textStyle="bold"
+                android:layout_margin="50dp"
+                android:gravity="center"/>
 
             <TextView
                 android:id="@+id/cookFirstNameText"

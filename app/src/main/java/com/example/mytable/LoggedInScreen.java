@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +44,19 @@ public class LoggedInScreen extends AppCompatActivity {
                 user = snapshot.getValue(User.class);
                 welcomeText = "Welcome, " + user.getFirstName() + " " + user.getLastName() + "\n" + "You are a: " + user.getUserType();
                 text.setText(welcomeText);
+
+
+                Button adminpanel = (Button)findViewById(R.id.adminpanel);
+
+
+
+                if (user.getUserType().equals("Administrator") ){
+                    adminpanel.setVisibility(View.VISIBLE);
+                }
+                else {
+                    adminpanel.setVisibility(View.GONE);
+                }
+
             }
 
             @Override
@@ -56,6 +70,10 @@ public class LoggedInScreen extends AppCompatActivity {
     public void logout(View v){
         dbRef.child(id).child("loginStatus").setValue(false);
         Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
+    public void openAdminPanel(View v){
+        Intent i = new Intent(this, admin_panel.class);
         startActivity(i);
     }
 }

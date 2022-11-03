@@ -75,6 +75,9 @@ public class LoginScreen extends AppCompatActivity {
                 successfulLogin.setVisibility(successfulLogin.VISIBLE);
                 dbRef.child(id).child("loginStatus").setValue(true);
 
+
+
+
                 Intent i = new Intent(this, LoggedInScreen.class);
                 i.putExtra("id", id);
                 startActivity(i);
