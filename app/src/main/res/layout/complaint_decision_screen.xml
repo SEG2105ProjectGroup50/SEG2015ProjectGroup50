@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewCookID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cook ID" />
+
+        <TextView
+            android:id="@+id/textCookID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textViewClientID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ClientID" />
+
+        <TextView
+            android:id="@+id/textClientID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textViewComplaintTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Complaint Title" />
+
+        <TextView
+            android:id="@+id/textComplaintTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textViewComplaintDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description" />
+
+        <TextView
+            android:id="@+id/textComplaintDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/buttonDismiss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dismiss" />
+
+        <Button
+            android:id="@+id/buttonSuspendTemporarily"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Suspend Temporarily" />
+
+        <Button
+            android:id="@+id/buttonSuspendIndefinitely"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Suspend Indefinitely" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,14 +17,7 @@
         android:theme="@style/Theme.MyTable"
         tools:targetApi="31">
         <activity
-            android:name=".pendingComplainScreen"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".admin_panel"
+            android:name=".pendingComplaintScreen"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -38,7 +31,21 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".LoggedInScreen"
+            android:name=".LoggedInScreenClient"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".LoggedInScreenCook"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".LoggedInScreenAdmin"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

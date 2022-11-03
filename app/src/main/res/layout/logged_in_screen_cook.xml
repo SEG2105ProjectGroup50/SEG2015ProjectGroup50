@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_main"
-    tools:context=".LoggedInScreen">
+    tools:context=".LoggedInScreenClient">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,17 +14,9 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/txtWelcome"
+            android:id="@+id/txtWelcomeCook"
             android:layout_width="191dp"
-            android:layout_height="50dp"
-            android:text="TextView" />
-        <Button
-            android:id="@+id/adminpanel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="openAdminPanel"
-            android:text="adminpage"/>
-
+            android:layout_height="50dp" />
 
 
         <Button

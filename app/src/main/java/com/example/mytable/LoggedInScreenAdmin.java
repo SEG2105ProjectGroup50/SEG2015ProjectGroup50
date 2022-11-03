@@ -1,8 +1,5 @@
 package com.example.mytable;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,13 +7,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class LoggedInScreen extends AppCompatActivity {
+public class LoggedInScreenAdmin extends AppCompatActivity {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dbRef = database.getReference("users");
@@ -27,8 +27,8 @@ public class LoggedInScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.logged_in_screen);
-        text = (TextView) findViewById(R.id.txtWelcome);
+        setContentView(R.layout.logged_in_screen_admin);
+        text = (TextView) findViewById(R.id.txtWelcomeAdmin);
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
         if (bundle != null){
@@ -44,19 +44,6 @@ public class LoggedInScreen extends AppCompatActivity {
                 user = snapshot.getValue(User.class);
                 welcomeText = "Welcome, " + user.getFirstName() + " " + user.getLastName() + "\n" + "You are a: " + user.getUserType();
                 text.setText(welcomeText);
-
-
-                Button adminpanel = (Button)findViewById(R.id.adminpanel);
-
-
-
-                if (user.getUserType().equals("Administrator") ){
-                    adminpanel.setVisibility(View.VISIBLE);
-                }
-                else {
-                    adminpanel.setVisibility(View.GONE);
-                }
-
             }
 
             @Override
@@ -72,8 +59,10 @@ public class LoggedInScreen extends AppCompatActivity {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
-    public void openAdminPanel(View v){
-        Intent i = new Intent(this, admin_panel.class);
+
+    public void openComplaints(View v) {
+        Intent i = new Intent(this, pendingComplaintScreen.class);
         startActivity(i);
     }
+
 }
