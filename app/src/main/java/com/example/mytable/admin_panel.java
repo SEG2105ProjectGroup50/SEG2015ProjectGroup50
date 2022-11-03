@@ -13,6 +13,11 @@ public class admin_panel extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_panel);
     }
+    public void tocomplainmenu(View v){
+        Intent i = new Intent(this, pendingComplainScreen.class);
+        startActivity(i);
+    }
+
     public void adminback(View v){
         Intent i = new Intent(this, LoggedInScreen.class);
         startActivity(i);
