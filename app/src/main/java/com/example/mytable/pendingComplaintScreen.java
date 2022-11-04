@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -89,29 +90,31 @@ public class pendingComplaintScreen extends AppCompatActivity {
         final View dialogView = inflater.inflate(R.layout.complaint_decision_screen, null);
         dialogBuilder.setView(dialogView);
 
-        final TextView textCookID = (TextView) dialogView.findViewById(R.id.textCookID);
+
         final TextView textClientID = (TextView) dialogView.findViewById(R.id.textClientID);
         final TextView textComplaintTitle = (TextView) dialogView.findViewById(R.id.textComplaintTitle);
         final TextView textComplaintDescription = (TextView) dialogView.findViewById(R.id.textComplaintDescription);
-        final Button buttonDismiss = (Button) dialogView.findViewById(R.id.buttonDismiss);
         final Button buttonSuspendTemporarily = (Button) dialogView.findViewById(R.id.buttonSuspendTemporarily);
         final Button buttonSuspendIndefinitely = (Button) dialogView.findViewById(R.id.buttonSuspendIndefinitely);
 
-        textCookID.setText(complaint.getCookId());
+
         textClientID.setText(complaint.getClientId());
         textComplaintTitle.setText(complaint.getTitle());
         textComplaintDescription.setText(complaint.getDescription());
 
-        dialogBuilder.setTitle("Complaint");
+
+        TextView txtTitle = new TextView(this);
+        txtTitle.setText("Complaint on CookID "+ complaint.getCookId());
+        txtTitle.setGravity(Gravity.CENTER);
+
+        dialogBuilder.setCustomTitle(txtTitle);
         final AlertDialog b = dialogBuilder.create();
         b.show();
 
-        buttonDismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
+
+
+
 
         buttonSuspendTemporarily.setOnClickListener(new View.OnClickListener() {
             @Override
