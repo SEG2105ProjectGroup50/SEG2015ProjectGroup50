@@ -4,11 +4,15 @@ import java.util.regex.*;
 
 public class User {
     protected String email, password, firstName, lastName, userType;
+    private boolean suspendedStatus;
+    private long suspensionDate;
     protected boolean loginStatus;
 
 
     public User() { // default constructor
         loginStatus = false;
+        this.suspendedStatus = false;
+        this.suspensionDate = 0;
     }
 
     public boolean verifyLogin() {
@@ -98,6 +102,22 @@ public class User {
 
     public void setUserType(String type){
         this.userType = type;
+    }
+
+    public boolean getsuspendedStatus(){
+        return suspendedStatus;
+    }
+
+    public void setSuspendedStatus(Boolean suspendedStatus){
+        this.suspendedStatus = suspendedStatus;
+    }
+
+    public long getSuspensionDate(){
+        return suspensionDate;
+    }
+
+    public void setSuspensionDate(long suspensionDate){
+        this.suspensionDate = suspensionDate;
     }
 
 }

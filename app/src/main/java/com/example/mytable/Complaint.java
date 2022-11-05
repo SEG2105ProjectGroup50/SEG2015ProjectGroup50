@@ -1,7 +1,7 @@
 package com.example.mytable;
 
 public class Complaint {
-    private String description, clientId, cookId, title, status;
+    private String description, Id, clientId, cookId, title, status;
 
     public Complaint() {
     }
@@ -52,5 +52,12 @@ public class Complaint {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setId(String id){
+        this.Id = id;
+    }
+    public String getId(){
+        return Id;
     }
 }

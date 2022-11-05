@@ -74,7 +74,15 @@ public class LoginScreen extends AppCompatActivity {
                 failedLogin.setVisibility(failedLogin.GONE);
                 successfulLogin.setVisibility(successfulLogin.VISIBLE);
                 dbRef.child(id).child("loginStatus").setValue(true);
-                Intent i = new Intent(this, LoggedInScreenAdmin.class);
+                String userType = dbSnapshot.child(id).child("userType").getValue(String.class);
+                Intent i;
+                if (userType.equals("Administrator")){
+                    i = new Intent(this, LoggedInScreenAdmin.class);
+                } else if (userType.equals("Cook")){
+                    i = new Intent(this, LoggedInScreenCook.class);
+                } else {
+                    i = new Intent(this, LoggedInScreenClient.class);
+                }
                 i.putExtra("id", id);
                 startActivity(i);
             }

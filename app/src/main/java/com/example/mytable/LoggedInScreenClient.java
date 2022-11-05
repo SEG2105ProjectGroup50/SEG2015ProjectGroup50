@@ -16,6 +16,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 public class LoggedInScreenClient extends AppCompatActivity {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -23,12 +27,15 @@ public class LoggedInScreenClient extends AppCompatActivity {
     TextView text;
     String id, welcomeText = null;
     User user;
+    Button buttonManageComplaints;
+    Button btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.logged_in_screen_client);
         text = (TextView) findViewById(R.id.txtWelcomeClient);
+        btnLogout = (Button) findViewById(R.id.btnLogout);
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
         if (bundle != null){
@@ -41,22 +48,21 @@ public class LoggedInScreenClient extends AppCompatActivity {
         dbRef.child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                user = snapshot.getValue(User.class);
-                welcomeText = "Welcome, " + user.getFirstName() + " " + user.getLastName() + "\n" + "You are a: " + user.getUserType();
-                text.setText(welcomeText);
-
-
-                Button adminpanel = (Button)findViewById(R.id.buttonManageComplaints);
-
-
-
-                if (user.getUserType().equals("Administrator") ){
-                    adminpanel.setVisibility(View.VISIBLE);
+                user = snapshot.getValue(Cook.class);
+                if (user.getsuspendedStatus() == true){
+                    if (user.getSuspensionDate() == -1){
+                        welcomeText = "YOUR ACCOUNT HAS BEEN INDEFINITELY SUSPENDED";
+                    } else {
+                        long value = user.getSuspensionDate();
+                        LocalDate date = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault()).toLocalDate();
+                        welcomeText = "ACCOUNT SUSPENDED! THE SUSPENSION WILL BE LIFTED ON: " + date.getYear() + "/" + date.getMonthValue() + "/" + date.getDayOfMonth();
+                    }
+                    text.setText(welcomeText);
+                    buttonManageComplaints.setVisibility(View.GONE);
+                } else{
+                    welcomeText = "Welcome, " + user.getFirstName() + " " + user.getLastName() + "\n" + "You are a: " + user.getUserType();
+                    text.setText(welcomeText);
                 }
-                else {
-                    adminpanel.setVisibility(View.GONE);
-                }
-
             }
 
             @Override

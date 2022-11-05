@@ -23,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ public class pendingComplaintScreen extends AppCompatActivity {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dbRef = database.getReference("complaints");
+    private DatabaseReference dbRef2 = database.getReference("users");
     ListView listView;
     List<Complaint> complaintList;
     ComplaintList adapter;
@@ -55,7 +58,11 @@ public class pendingComplaintScreen extends AppCompatActivity {
                 complaintList = new ArrayList<>();
                 Iterable<DataSnapshot> complaintsIterable = dbSnapshot.getChildren();
                 for(DataSnapshot PostSnapshot : complaintsIterable) {
-                    complaintList.add(PostSnapshot.getValue(Complaint.class));
+                    if (!PostSnapshot.getValue(Complaint.class).getStatus().equals("RESOLVED")) {
+                        Complaint x = PostSnapshot.getValue(Complaint.class);
+                        x.setId(PostSnapshot.getKey());
+                        complaintList.add(x);
+                    }
                 }
                 adapter = new ComplaintList(pendingComplaintScreen.this, complaintList);
                 listView.setAdapter(adapter);
@@ -67,7 +74,6 @@ public class pendingComplaintScreen extends AppCompatActivity {
                 Log.w(TAG, "loadPost:onCancelled", error.toException());
             }
         });
-
     }
 
     public void onItemLongClick() {
@@ -96,6 +102,7 @@ public class pendingComplaintScreen extends AppCompatActivity {
         final TextView textComplaintDescription = (TextView) dialogView.findViewById(R.id.textComplaintDescription);
         final Button buttonSuspendTemporarily = (Button) dialogView.findViewById(R.id.buttonSuspendTemporarily);
         final Button buttonSuspendIndefinitely = (Button) dialogView.findViewById(R.id.buttonSuspendIndefinitely);
+        final Button discardComplaint = (Button) dialogView.findViewById(R.id.discardComplaint);
 
 
         textClientID.setText(complaint.getClientId());
@@ -113,20 +120,33 @@ public class pendingComplaintScreen extends AppCompatActivity {
 
 
 
-
-
-
         buttonSuspendTemporarily.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                long date = 1667611925795l;
+                dbRef2.child(complaint.getCookId()).child("suspendedStatus").setValue(true);
+                dbRef2.child(complaint.getCookId()).child("suspensionDate").setValue(date);
+                dbRef.child(complaint.getId()).child("status").setValue("RESOLVED");
+                b.hide();
             }
         });
 
         buttonSuspendIndefinitely.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                long date = -1;
+                dbRef2.child(complaint.getCookId()).child("suspendedStatus").setValue(true);
+                dbRef2.child(complaint.getCookId()).child("suspensionDate").setValue(date);
+                dbRef.child(complaint.getId()).child("status").setValue("RESOLVED");
+                b.hide();
+            }
+        });
 
+        discardComplaint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbRef.child(complaint.getId()).child("status").setValue("RESOLVED");
+                b.hide();
             }
         });
     }

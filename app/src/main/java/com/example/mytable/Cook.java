@@ -1,7 +1,5 @@
 package com.example.mytable;
 
-import android.provider.Telephony;
-
 public class Cook extends User{
     private String voidChequeFileName, cookDescription;
     private int mealsSold, cookRating;
