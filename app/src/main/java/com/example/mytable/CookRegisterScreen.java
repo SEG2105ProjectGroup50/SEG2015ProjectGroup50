@@ -45,6 +45,7 @@ public class CookRegisterScreen extends AppCompatActivity {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dbRef = database.getReference("users");
     private DatabaseReference images = database.getReference("images");
+    private DatabaseReference dbRefMenus = database.getReference("menus");
     ImageView voidChequeImage;
     boolean photoTaken;
 
@@ -277,6 +278,7 @@ public class CookRegisterScreen extends AppCompatActivity {
     public void postNewCook(Cook newCook){ // uploads
         String userId = dbRef.push().getKey();
         dbRef.child(userId).setValue(newCook);
+
 //        voidChequeImage.setDrawingCacheEnabled(true);
 //        voidChequeImage.buildDrawingCache();
 //        Bitmap bitmap = ((BitmapDrawable) voidChequeImage.getDrawable()).getBitmap();
