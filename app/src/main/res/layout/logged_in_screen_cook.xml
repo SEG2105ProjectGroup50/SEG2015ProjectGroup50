@@ -24,7 +24,11 @@
             android:id="@+id/txtMealsOffered"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Meals offered" />
+            android:text="Meals offered"
+            android:textColor="@color/white"
+            android:textSize="35dp"
+            android:layout_margin="20dp"
+            android:textStyle="bold" />
 
         <ListView
             android:id="@+id/menuList"
@@ -38,7 +42,11 @@
             android:id="@+id/txtUnavailableMeals"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Unavailable meals" />
+            android:text="Unavailable meals"
+            android:textColor="@color/white"
+            android:textSize="35dp"
+            android:layout_margin="20dp"
+            android:textStyle="bold" />
 
         <ListView
             android:id="@+id/menuList2"
