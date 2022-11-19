@@ -36,25 +36,27 @@ public class LoggedInScreenCook extends AppCompatActivity {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dbRef = database.getReference("users");
     private DatabaseReference dbRefMenus = database.getReference("menus");
-    TextView text;
+    TextView text, txtMealsOffered, txtUnavailableMeals;;
     String id, welcomeText = null;
     User user;
     Button btnLogout, buttonOpenAddMenuItemPopup;
     DataSnapshot dbSnapshot;
-    List<MenuItem> menuItemList;
-    ListView menuListView;
-    MenuItemList adapter;
-
+    List<MenuItem> menuItemList, menuItemList2;
+    ListView menuListView, menuListView2;
+    MenuItemList adapter, adapter2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.logged_in_screen_cook);
         text = (TextView) findViewById(R.id.txtWelcomeCook);
+        txtMealsOffered = findViewById(R.id.txtMealsOffered);
+        txtUnavailableMeals = findViewById(R.id.txtUnavailableMeals);
         btnLogout = (Button) findViewById(R.id.btnLogout);
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
         menuListView = (ListView) findViewById(R.id.menuList);
+        menuListView2 = (ListView) findViewById(R.id.menuList2);
         buttonOpenAddMenuItemPopup = (Button) findViewById(R.id.buttonOpenAddMenuItemPopup);
         if (bundle != null){
             id = (String) bundle.get("id");
@@ -79,6 +81,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
                     text.setText(welcomeText);
                     text.setVisibility(text.VISIBLE);
                     menuListView.setVisibility(menuListView.GONE);
+                    menuListView2.setVisibility(menuListView.GONE);
                     buttonOpenAddMenuItemPopup.setVisibility(buttonOpenAddMenuItemPopup.GONE);
                     user.setLoginStatus(false);
                 } else{
@@ -86,6 +89,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
                     text.setText(welcomeText);
                     text.setVisibility(text.VISIBLE);
                     menuListView.setVisibility(menuListView.VISIBLE);
+                    menuListView2.setVisibility(menuListView.VISIBLE);
                     buttonOpenAddMenuItemPopup.setVisibility(buttonOpenAddMenuItemPopup.VISIBLE);
                 }
             }
@@ -101,13 +105,32 @@ public class LoggedInScreenCook extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 dbSnapshot = snapshot;
                 menuItemList = new ArrayList<>();
+                menuItemList2 = new ArrayList<>();
                 Iterable<DataSnapshot> menuItemsIterable = dbSnapshot.getChildren();
                 for(DataSnapshot PostSnapshot : menuItemsIterable) {
                     MenuItem x = PostSnapshot.getValue(MenuItem.class);
-                    menuItemList.add(x);
+                    if (x.getIsOffered()){
+                        menuItemList.add(x);
+                    } else{
+                        menuItemList2.add(x);
+                    }
                 }
                 adapter = new MenuItemList(LoggedInScreenCook.this, menuItemList);
+                adapter2 = new MenuItemList(LoggedInScreenCook.this, menuItemList2);
                 menuListView.setAdapter(adapter);
+                menuListView2.setAdapter(adapter2);
+
+                if (menuItemList.isEmpty()){
+                    txtMealsOffered.setVisibility(txtMealsOffered.GONE);
+                } else{
+                    txtMealsOffered.setVisibility(txtMealsOffered.VISIBLE);
+                }
+
+                if (menuItemList2.isEmpty()){
+                    txtUnavailableMeals.setVisibility(txtUnavailableMeals.GONE);
+                } else{
+                    txtUnavailableMeals.setVisibility(txtUnavailableMeals.VISIBLE);
+                }
             }
 
             @Override
@@ -130,6 +153,16 @@ public class LoggedInScreenCook extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MenuItem menuItem = menuItemList.get(i);
+
+                showMenuItemUpdateDialog(menuItem);
+                return true;
+            }
+        });
+
+        menuListView2.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                MenuItem menuItem = menuItemList2.get(i);
 
                 showMenuItemUpdateDialog(menuItem);
                 return true;

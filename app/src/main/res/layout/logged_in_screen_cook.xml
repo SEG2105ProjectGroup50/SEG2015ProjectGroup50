@@ -20,6 +20,12 @@
             android:layout_height="50dp"
             android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/txtMealsOffered"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Meals offered" />
+
         <ListView
             android:id="@+id/menuList"
             android:layout_width="match_parent"
@@ -27,6 +33,18 @@
             android:visibility="gone">
 
         </ListView>
+
+        <TextView
+            android:id="@+id/txtUnavailableMeals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Unavailable meals" />
+
+        <ListView
+            android:id="@+id/menuList2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/buttonOpenAddMenuItemPopup"
