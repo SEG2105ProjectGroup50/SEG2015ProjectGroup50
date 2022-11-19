@@ -1,4 +1,6 @@
 package com.example.mytable;
+import android.content.Context;
+
 import java.time.LocalDate;
 import java.util.regex.*;
 
@@ -13,6 +15,10 @@ public class User {
         loginStatus = false;
         this.suspendedStatus = false;
         this.suspensionDate = 0;
+    }
+
+    public User(Context context) {
+
     }
 
     public boolean verifyLogin() {
@@ -49,12 +55,12 @@ public class User {
         }
     }
 
-    public boolean isLoginStatus() {
-        return loginStatus;
-    }
-
     public void setLoginStatus(boolean loginStatus) {
         this.loginStatus = loginStatus;
+    }
+
+    public Boolean getLoginStatus() {
+        return loginStatus;
     }
 
     public String getEmail() { // returns user Email

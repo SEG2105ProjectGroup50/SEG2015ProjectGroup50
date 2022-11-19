@@ -1,5 +1,7 @@
 package com.example.mytable;
 
+import android.content.Context;
+
 public class Client extends User{
     private Address clientAddress;
     private int cardCVC;
@@ -8,6 +10,10 @@ public class Client extends User{
 
     public Client() {
         this.userType = "Client";
+    }
+
+    public Client(Context context) {
+
     }
 
     public Client(Address clientAddress, int cardCVC, long cardNumber, String cardHolderName, String cardExpirationDate) {

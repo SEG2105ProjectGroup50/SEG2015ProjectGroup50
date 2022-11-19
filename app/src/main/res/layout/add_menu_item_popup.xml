@@ -60,6 +60,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add Item" />
+
+        <TextView
+            android:id="@+id/invalidMenuItemFields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Menu Item fields cannot be empty!"
+            android:visibility="gone" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

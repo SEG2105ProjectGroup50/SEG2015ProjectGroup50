@@ -78,6 +78,9 @@ public class LoggedInScreenCook extends AppCompatActivity {
                     }
                     text.setText(welcomeText);
                     text.setVisibility(text.VISIBLE);
+                    menuListView.setVisibility(menuListView.GONE);
+                    buttonOpenAddMenuItemPopup.setVisibility(buttonOpenAddMenuItemPopup.GONE);
+                    user.setLoginStatus(false);
                 } else{
                     menuListView.setVisibility(menuListView.VISIBLE);
                     buttonOpenAddMenuItemPopup.setVisibility(buttonOpenAddMenuItemPopup.VISIBLE);
@@ -163,21 +166,36 @@ public class LoggedInScreenCook extends AppCompatActivity {
 
 
         buttonUpdateMenuItem.setOnClickListener(new View.OnClickListener() {
+            View dialogView = inflater.inflate(R.layout.update_menu_item_popup, null);
+
             @Override
             public void onClick(View view) {
-                dbRefMenus.child(id).child(menuItem.getId()).child("name").setValue(editMenuItemName.getText().toString());
-                dbRefMenus.child(id).child(menuItem.getId()).child("description").setValue(editMenuItemDescription.getText().toString());
-                dbRefMenus.child(id).child(menuItem.getId()).child("price").setValue(editMenuItemPrice.getText().toString());
-                dbRefMenus.child(id).child(menuItem.getId()).child("isOffered").setValue(switchMenuItemIsOfferedUpdate.isChecked());
-                b.hide();
+                TextView invalidMenuItemFields2 =  dialogView.findViewById(R.id.invalidMenuItemFields2);
+                if (!editMenuItemName.getText().toString().equals("") && !editMenuItemDescription.getText().toString().equals("") && editMenuItemPrice.getText().toString().matches("-?\\d+(\\.\\d+)?")){
+                    dbRefMenus.child(id).child(menuItem.getId()).child("name").setValue(editMenuItemName.getText().toString());
+                    dbRefMenus.child(id).child(menuItem.getId()).child("description").setValue(editMenuItemDescription.getText().toString());
+                    dbRefMenus.child(id).child(menuItem.getId()).child("price").setValue(editMenuItemPrice.getText().toString());
+                    dbRefMenus.child(id).child(menuItem.getId()).child("isOffered").setValue(switchMenuItemIsOfferedUpdate.isChecked());
+                    b.hide();
+                } else{
+                    invalidMenuItemFields2.setVisibility(invalidMenuItemFields2.VISIBLE);
+                }
+
+
             }
         });
 
         buttonDeleteMenuItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dbRefMenus.child(id).child(menuItem.getId()).removeValue();
-                b.hide();
+                TextView offeredError =  dialogView.findViewById(R.id.offeredError);
+                Boolean isOffered = dbSnapshot.child(menuItem.getId()).child("isOffered").getValue(Boolean.class);
+                if (!isOffered){
+                    dbRefMenus.child(id).child(menuItem.getId()).removeValue();
+                    b.hide();
+                } else{
+                    offeredError.setVisibility(offeredError.VISIBLE);
+                }
             }
         });
     }
@@ -191,6 +209,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
 
 
         final EditText addMenuItemName = (EditText) dialogView.findViewById(R.id.addMenuItemName);
+        TextView invalidMenuItemFields = dialogView.findViewById(R.id.invalidMenuItemFields);
         final EditText addMenuItemDescription = (EditText) dialogView.findViewById(R.id.addMenuItemDescription);
         final EditText addMenuItemPrice = (EditText) dialogView.findViewById(R.id.addMenuItemPrice);
         final Button buttonAddMenuItem = (Button) dialogView.findViewById(R.id.buttonAddMenuItem);
@@ -214,8 +233,13 @@ public class LoggedInScreenCook extends AppCompatActivity {
                 MenuItem menuItem = new MenuItem(addMenuItemName.getText().toString(), addMenuItemDescription.getText().toString(), addMenuItemPrice.getText().toString(), switchMenuItemIsOfferedAdd.isChecked());
                 String itemId = dbRefMenus.child(id).push().getKey();
                 menuItem.setId(itemId);
-                dbRefMenus.child(id).child(itemId).setValue(menuItem);
-                b.hide();
+                if (!addMenuItemName.getText().toString().equals("") && !addMenuItemDescription.getText().toString().equals("") && addMenuItemPrice.getText().toString().matches("-?\\d+(\\.\\d+)?")){
+                    dbRefMenus.child(id).child(itemId).setValue(menuItem);
+                    b.hide();
+                } else{
+                    invalidMenuItemFields.setVisibility(View.VISIBLE);
+                }
+
             }
         });
 
