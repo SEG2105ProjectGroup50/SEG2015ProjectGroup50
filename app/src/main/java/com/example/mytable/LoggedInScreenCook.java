@@ -82,6 +82,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
                     text.setVisibility(text.VISIBLE);
                     menuListView.setVisibility(menuListView.GONE);
                     menuListView2.setVisibility(menuListView.GONE);
+                    txtMealsOffered.setVisibility(txtMealsOffered.GONE);
+                    txtUnavailableMeals.setVisibility(txtUnavailableMeals.GONE);
                     buttonOpenAddMenuItemPopup.setVisibility(buttonOpenAddMenuItemPopup.GONE);
                     user.setLoginStatus(false);
                 } else{
