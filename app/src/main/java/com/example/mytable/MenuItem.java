@@ -3,7 +3,15 @@ package com.example.mytable;
 public class MenuItem {
     private String name, description, price;
     private boolean isOffered;
-    private String id;
+    private String id, cookId;
+
+    public String getCookId() {
+        return cookId;
+    }
+
+    public void setCookId(String cookId) {
+        this.cookId = cookId;
+    }
 
     public MenuItem() {
         name = "";

@@ -70,6 +70,17 @@
             android:onClick="logout"
             android:text="LOG OUT" />
 
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pending Orders" />
+
+        <ListView
+            android:id="@+id/cookPendingOrders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
 
     </LinearLayout>
 

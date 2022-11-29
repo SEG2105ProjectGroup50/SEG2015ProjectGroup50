@@ -123,7 +123,7 @@ public class pendingComplaintScreen extends AppCompatActivity {
         buttonSuspendTemporarily.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                long date = 1667611925795l;
+                long date = 1670286893l;
                 dbRef2.child(complaint.getCookId()).child("suspendedStatus").setValue(true);
                 dbRef2.child(complaint.getCookId()).child("suspensionDate").setValue(date);
                 dbRef.child(complaint.getId()).child("status").setValue("RESOLVED");

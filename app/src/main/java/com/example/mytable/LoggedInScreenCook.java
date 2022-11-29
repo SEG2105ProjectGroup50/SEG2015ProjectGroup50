@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,14 +38,17 @@ public class LoggedInScreenCook extends AppCompatActivity {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dbRef = database.getReference("users");
     private DatabaseReference dbRefMenus = database.getReference("menus");
+    private DatabaseReference dbRefOrders = database.getReference("orders");
     TextView text, txtMealsOffered, txtUnavailableMeals;;
     String id, welcomeText = null;
     User user;
     Button btnLogout, buttonOpenAddMenuItemPopup;
     DataSnapshot dbSnapshot;
     List<MenuItem> menuItemList, menuItemList2;
-    ListView menuListView, menuListView2;
+    ListView menuListView, menuListView2, orderListView;
     MenuItemList adapter, adapter2;
+    List<Order> pendingOrders;
+    OrderList pendingOrderListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,9 @@ public class LoggedInScreenCook extends AppCompatActivity {
         Bundle bundle = i.getExtras();
         menuListView = (ListView) findViewById(R.id.menuList);
         menuListView2 = (ListView) findViewById(R.id.menuList2);
+        orderListView = (ListView) findViewById(R.id.cookPendingOrders);
         buttonOpenAddMenuItemPopup = (Button) findViewById(R.id.buttonOpenAddMenuItemPopup);
+
         if (bundle != null){
             id = (String) bundle.get("id");
         }
@@ -141,6 +148,29 @@ public class LoggedInScreenCook extends AppCompatActivity {
                 Log.w(TAG, "loadPost:onCancelled", error.toException());
             }
         });
+        dbRefOrders.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DataSnapshot orderSnapshot = snapshot;
+                pendingOrders = new ArrayList<Order>();
+                Iterable<DataSnapshot> ordersIterable = orderSnapshot.getChildren();
+
+                for (DataSnapshot order : ordersIterable) {
+                    Order tempOrder = order.getValue(Order.class);
+                    if (tempOrder.getCookId().equals(id) && tempOrder.getStatus().equals("PENDING")) {
+                        pendingOrders.add(tempOrder);
+                    }
+                }
+                pendingOrderListAdapter = new OrderList(LoggedInScreenCook.this, pendingOrders);
+                orderListView.setAdapter(pendingOrderListAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String TAG = "Couldn't fetch orders";
+                Log.w(TAG, "loadPost:onCancelled", error.toException());
+            }
+        });
     }
 
     public void logout(View v){
@@ -167,6 +197,16 @@ public class LoggedInScreenCook extends AppCompatActivity {
                 MenuItem menuItem = menuItemList2.get(i);
 
                 showMenuItemUpdateDialog(menuItem);
+                return true;
+            }
+        });
+
+        orderListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Order order = pendingOrders.get(i);
+
+                showOrderDecisionDialog(order);
                 return true;
             }
         });
@@ -271,6 +311,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
                 MenuItem menuItem = new MenuItem(addMenuItemName.getText().toString(), addMenuItemDescription.getText().toString(), addMenuItemPrice.getText().toString(), switchMenuItemIsOfferedAdd.isChecked());
                 String itemId = dbRefMenus.child(id).push().getKey();
                 menuItem.setId(itemId);
+                menuItem.setCookId(id);
                 if (!addMenuItemName.getText().toString().equals("") && !addMenuItemDescription.getText().toString().equals("") && addMenuItemPrice.getText().toString().matches("-?\\d+(\\.\\d+)?")){
                     dbRefMenus.child(id).child(itemId).setValue(menuItem);
                     b.hide();
@@ -278,6 +319,50 @@ public class LoggedInScreenCook extends AppCompatActivity {
                     invalidMenuItemFields.setVisibility(View.VISIBLE);
                 }
 
+            }
+        });
+
+
+    }
+
+    public void showOrderDecisionDialog(Order order) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.order_decision_popup, null);
+        dialogBuilder.setView(dialogView);
+
+
+
+        final TextView clientName = dialogView.findViewById(R.id.orderClientName);
+        final TextView orderMenuItemName = dialogView.findViewById(R.id.orderMenuItemName);
+        final Button acceptOrder = dialogView.findViewById(R.id.buttonAcceptOrder);
+        final Button rejectOrder = dialogView.findViewById(R.id.buttonRejectOrder);
+
+
+        TextView txtTitle = new TextView(this);
+        txtTitle.setText("Make Decision");
+        txtTitle.setGravity(Gravity.CENTER);
+
+        dialogBuilder.setCustomTitle(txtTitle);
+        final AlertDialog b = dialogBuilder.create();
+        b.show();
+
+
+
+        acceptOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dbRefOrders.child(order.getId()).child("status").setValue("ACCEPTED");
+                b.dismiss();
+            }
+        });
+
+        rejectOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dbRefOrders.child(order.getId()).child("status").setValue("REJECTED");
+                b.dismiss();
             }
         });
 
