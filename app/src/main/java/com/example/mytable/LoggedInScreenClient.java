@@ -12,25 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class LoggedInScreenClient extends AppCompatActivity {
@@ -46,10 +40,10 @@ public class LoggedInScreenClient extends AppCompatActivity {
     Button btnLogout;
     List<MenuItem> menuItemList;
     MenuItemList menuItemListAdapter;
-    ListView menuItemListView, pendingOrdersListView, completedOrdersListView;
+    ListView menuItemListView, pendingOrdersListView, completedOrdersListView, rejectedOrdersListView;
     DataSnapshot usersDbSnapshot;
-    List<Order> pendingOrders, completedOrders;
-    OrderList pendingOrdersListAdapter, completedOrdersListAdapter;
+    List<Order> pendingOrders, completedOrders, rejectedOrders;
+    OrderList pendingOrdersListAdapter, completedOrdersListAdapter, rejectedOrdersListAdapter;
 
 
 
@@ -69,6 +63,7 @@ public class LoggedInScreenClient extends AppCompatActivity {
         menuItemListView = (ListView) findViewById(R.id.clientMealsList);
         pendingOrdersListView = (ListView) findViewById(R.id.clientPendingOrdersList);
         completedOrdersListView = (ListView) findViewById(R.id.clientCompletedOrdersList);
+        rejectedOrdersListView = (ListView) findViewById(R.id.clientRejectedOrdersList);
         onItemLongClick();
     }
 
@@ -138,6 +133,7 @@ public class LoggedInScreenClient extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 pendingOrders = new ArrayList<Order>();
                 completedOrders = new ArrayList<Order>();
+                rejectedOrders = new ArrayList<Order>();
                 DataSnapshot orderSnapshot = snapshot;
                 Iterable<DataSnapshot> ordersIterable = orderSnapshot.getChildren();
 
@@ -145,14 +141,18 @@ public class LoggedInScreenClient extends AppCompatActivity {
                     Order tempOrder = order.getValue(Order.class);
                     if (tempOrder.getClientId().equals(id) && tempOrder.getStatus().equals("PENDING")) {
                         pendingOrders.add(tempOrder);
-                    } else if (tempOrder.getClientId().equals(id)) {
+                    } else if (tempOrder.getClientId().equals(id) && tempOrder.getStatus().equals("ACCEPTED")) {
                         completedOrders.add(tempOrder);
+                    } else if (tempOrder.getClientId().equals(id)) {
+                        rejectedOrders.add(tempOrder);
                     }
                 }
                 pendingOrdersListAdapter = new OrderList(LoggedInScreenClient.this, pendingOrders);
                 completedOrdersListAdapter = new OrderList(LoggedInScreenClient.this, completedOrders);
+                rejectedOrdersListAdapter = new OrderList(LoggedInScreenClient.this, rejectedOrders);
                 pendingOrdersListView.setAdapter(pendingOrdersListAdapter);
                 completedOrdersListView.setAdapter(completedOrdersListAdapter);
+                rejectedOrdersListView.setAdapter(rejectedOrdersListAdapter);
             }
 
             @Override

@@ -49,6 +49,32 @@
             android:ems="10"
             android:inputType="textPersonName" />
 
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cuisine Type" />
+
+        <EditText
+            android:id="@+id/addMenuItemCuisineType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Meal Type" />
+
+        <EditText
+            android:id="@+id/addMenuItemMealType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
         <Switch
             android:id="@+id/switchMenuItemIsOfferedAdd"
             android:layout_width="match_parent"

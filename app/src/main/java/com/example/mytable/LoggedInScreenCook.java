@@ -39,7 +39,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
     private DatabaseReference dbRef = database.getReference("users");
     private DatabaseReference dbRefMenus = database.getReference("menus");
     private DatabaseReference dbRefOrders = database.getReference("orders");
-    TextView text, txtMealsOffered, txtUnavailableMeals;;
+    TextView text, txtMealsOffered, txtUnavailableMeals;
     String id, welcomeText = null;
     User user;
     Button btnLogout, buttonOpenAddMenuItemPopup;
@@ -223,6 +223,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
         final EditText editMenuItemName = (EditText) dialogView.findViewById(R.id.editMenuItemName);
         final EditText editMenuItemDescription = (EditText) dialogView.findViewById(R.id.editMenuItemDescription);
         final EditText editMenuItemPrice = (EditText) dialogView.findViewById(R.id.editMenuItemPrice);
+        final EditText editMenuItemCuisineType = (EditText) dialogView.findViewById(R.id.editMenuItemCuisineType);
+        final EditText editMenuItemMealType = (EditText) dialogView.findViewById(R.id.editMenuItemMealType);
         final Button buttonUpdateMenuItem = (Button) dialogView.findViewById(R.id.buttonUpdateMenuItem);
         final Button buttonDeleteMenuItem = (Button) dialogView.findViewById(R.id.buttonDeleteMenuItem);
         final Switch switchMenuItemIsOfferedUpdate = (Switch) dialogView.findViewById(R.id.switchMenuItemIsOfferedUpdate);
@@ -231,6 +233,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
         editMenuItemName.setText(menuItem.getName());
         editMenuItemDescription.setText(menuItem.getDescription());
         editMenuItemPrice.setText(menuItem.getPrice());
+        editMenuItemCuisineType.setText(menuItem.getCuisineType());
+        editMenuItemMealType.setText(menuItem.getMealType());
         switchMenuItemIsOfferedUpdate.setChecked(menuItem.getIsOffered());
 
         TextView txtTitle = new TextView(this);
@@ -254,6 +258,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
                     dbRefMenus.child(id).child(menuItem.getId()).child("description").setValue(editMenuItemDescription.getText().toString());
                     dbRefMenus.child(id).child(menuItem.getId()).child("price").setValue(editMenuItemPrice.getText().toString());
                     dbRefMenus.child(id).child(menuItem.getId()).child("isOffered").setValue(switchMenuItemIsOfferedUpdate.isChecked());
+                    dbRefMenus.child(id).child(menuItem.getId()).child("cuisineType").setValue(editMenuItemCuisineType.getText().toString());
+                    dbRefMenus.child(id).child(menuItem.getId()).child("mealType").setValue(editMenuItemMealType.getText().toString());
                     b.hide();
                 } else{
                     invalidMenuItemFields2.setVisibility(invalidMenuItemFields2.VISIBLE);
@@ -290,6 +296,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
         TextView invalidMenuItemFields = dialogView.findViewById(R.id.invalidMenuItemFields);
         final EditText addMenuItemDescription = (EditText) dialogView.findViewById(R.id.addMenuItemDescription);
         final EditText addMenuItemPrice = (EditText) dialogView.findViewById(R.id.addMenuItemPrice);
+        final EditText addMenuItemCuisineType = (EditText) dialogView.findViewById(R.id.addMenuItemCuisineType);
+        final EditText addMenuItemMealType = (EditText) dialogView.findViewById(R.id.addMenuItemMealType);
         final Button buttonAddMenuItem = (Button) dialogView.findViewById(R.id.buttonAddMenuItem);
         final Switch switchMenuItemIsOfferedAdd = (Switch) dialogView.findViewById(R.id.switchMenuItemIsOfferedAdd);
 
@@ -308,11 +316,22 @@ public class LoggedInScreenCook extends AppCompatActivity {
         buttonAddMenuItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MenuItem menuItem = new MenuItem(addMenuItemName.getText().toString(), addMenuItemDescription.getText().toString(), addMenuItemPrice.getText().toString(), switchMenuItemIsOfferedAdd.isChecked());
+                MenuItem menuItem = new MenuItem(
+                        addMenuItemName.getText().toString(),
+                        addMenuItemDescription.getText().toString(),
+                        addMenuItemPrice.getText().toString(),
+                        addMenuItemCuisineType.getText().toString(),
+                        addMenuItemMealType.getText().toString(),
+                        switchMenuItemIsOfferedAdd.isChecked());
                 String itemId = dbRefMenus.child(id).push().getKey();
                 menuItem.setId(itemId);
                 menuItem.setCookId(id);
-                if (!addMenuItemName.getText().toString().equals("") && !addMenuItemDescription.getText().toString().equals("") && addMenuItemPrice.getText().toString().matches("-?\\d+(\\.\\d+)?")){
+                if (
+                        !addMenuItemName.getText().toString().equals("")
+                        && !addMenuItemDescription.getText().toString().equals("")
+                        && addMenuItemPrice.getText().toString().matches("-?\\d+(\\.\\d+)?")
+                        && !addMenuItemCuisineType.getText().toString().equals("")
+                        && !addMenuItemMealType.getText().toString().equals("")){
                     dbRefMenus.child(id).child(itemId).setValue(menuItem);
                     b.hide();
                 } else{

@@ -1,9 +1,9 @@
 package com.example.mytable;
 
 public class MenuItem {
-    private String name, description, price;
+    private String name, cuisineType, mealType,description, price, id, cookId;
     private boolean isOffered;
-    private String id, cookId;
+
 
     public String getCookId() {
         return cookId;
@@ -20,10 +20,12 @@ public class MenuItem {
         isOffered = false;
     }
 
-    public MenuItem(String name, String description, String price, boolean isOffered) {
+    public MenuItem(String name, String description, String price, String cuisineType, String mealType, boolean isOffered) {
         this.name = name;
         this.description = description;
         this.price = price;
+        this.cuisineType = cuisineType;
+        this.mealType = mealType;
         this.isOffered = isOffered;
     }
 
@@ -65,5 +67,21 @@ public class MenuItem {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCuisineType() {
+        return cuisineType;
+    }
+
+    public void setCuisineType(String cusisineType) {
+        this.cuisineType = cusisineType;
+    }
+
+    public String getMealType() {
+        return mealType;
+    }
+
+    public void setMealType(String mealType) {
+        this.mealType = mealType;
     }
 }
