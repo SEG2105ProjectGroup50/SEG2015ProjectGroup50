@@ -43,7 +43,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
     String id, welcomeText = null;
     User user;
     Button btnLogout, buttonOpenAddMenuItemPopup;
-    DataSnapshot dbSnapshot;
+    DataSnapshot dbSnapshot, userSnapshot;
     List<MenuItem> menuItemList, menuItemList2;
     ListView menuListView, menuListView2, orderListView;
     MenuItemList adapter, adapter2;
@@ -168,6 +168,18 @@ public class LoggedInScreenCook extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 final String TAG = "Couldn't fetch orders";
+                Log.w(TAG, "loadPost:onCancelled", error.toException());
+            }
+        });
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                userSnapshot = snapshot;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String TAG = "Couldn't fetch users";
                 Log.w(TAG, "loadPost:onCancelled", error.toException());
             }
         });
@@ -354,14 +366,21 @@ public class LoggedInScreenCook extends AppCompatActivity {
 
 
         final TextView clientName = dialogView.findViewById(R.id.orderClientName);
+        final TextView clientRating = dialogView.findViewById(R.id.orderClientRating);
         final TextView orderMenuItemName = dialogView.findViewById(R.id.orderMenuItemName);
         final Button acceptOrder = dialogView.findViewById(R.id.buttonAcceptOrder);
         final Button rejectOrder = dialogView.findViewById(R.id.buttonRejectOrder);
 
+        Client client = userSnapshot.child(order.getClientId()).getValue(Client.class);
 
         TextView txtTitle = new TextView(this);
         txtTitle.setText("Make Decision");
         txtTitle.setGravity(Gravity.CENTER);
+
+        clientRating.setText("Rating: " + client.getClientRating());
+        clientName.setText("Name: " + client.getFirstName() + " " + client.getLastName());
+        orderMenuItemName.setText("Menu Item: " + order.getItemName());
+
 
         dialogBuilder.setCustomTitle(txtTitle);
         final AlertDialog b = dialogBuilder.create();
@@ -387,5 +406,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
 
 
     }
+
+
 
 }

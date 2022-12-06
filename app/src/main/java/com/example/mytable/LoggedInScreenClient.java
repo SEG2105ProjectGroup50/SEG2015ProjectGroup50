@@ -33,6 +33,7 @@ public class LoggedInScreenClient extends AppCompatActivity {
     private DatabaseReference dbRefUsers = database.getReference("users");
     private DatabaseReference dbRefMenus = database.getReference("menus");
     private DatabaseReference dbRefOrders = database.getReference("orders");
+    private DatabaseReference dbRefComplaints = database.getReference("complaints");
     TextView text;
     String id, welcomeText = null;
     User user;
@@ -41,7 +42,7 @@ public class LoggedInScreenClient extends AppCompatActivity {
     List<MenuItem> menuItemList;
     MenuItemList menuItemListAdapter;
     ListView menuItemListView, pendingOrdersListView, completedOrdersListView, rejectedOrdersListView;
-    DataSnapshot usersDbSnapshot;
+    DataSnapshot usersDbSnapshot, complaintsSnapshot;
     List<Order> pendingOrders, completedOrders, rejectedOrders;
     OrderList pendingOrdersListAdapter, completedOrdersListAdapter, rejectedOrdersListAdapter;
 
@@ -161,6 +162,19 @@ public class LoggedInScreenClient extends AppCompatActivity {
                 Log.w(TAG, "loadPost:onCancelled", error.toException());
             }
         });
+
+        dbRefComplaints.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                complaintsSnapshot = snapshot;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String TAG = "Can't get complaints";
+                Log.w(TAG, "loadPost:onCancelled", error.toException());
+            }
+        });
     }
 
     private void showOrderDialog(MenuItem menuItem) {
@@ -215,6 +229,45 @@ public class LoggedInScreenClient extends AppCompatActivity {
 
     }
 
+    private void showComplaintDialog(Order order) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.client_complaint_screen_dialog, null);
+        dialogBuilder.setView(dialogView);
+
+        final TextView title = dialogView.findViewById(R.id.clientComplaintTitle);
+        final TextView description = dialogView.findViewById(R.id.clientComplaintDescription);
+        final Button submitComplaint = dialogView.findViewById(R.id.buttonSubmitComplaint);
+
+
+        TextView txtTitle = new TextView(this);
+        txtTitle.setText("Make a Complaint");
+        txtTitle.setGravity(Gravity.CENTER);
+
+        dialogBuilder.setCustomTitle(txtTitle);
+        final AlertDialog b = dialogBuilder.create();
+        b.show();
+
+        submitComplaint.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Complaint complaint = new Complaint();
+                String complaintId = dbRefComplaints.push().getKey();
+                complaint.setClientId(id);
+                complaint.setCookId(order.getCookId());
+                complaint.setId(complaintId);
+                complaint.setTitle(title.getText().toString());
+                complaint.setDescription(description.getText().toString());
+                complaint.setStatus("PENDING");
+                dbRefComplaints.child(complaintId).setValue(complaint);
+            }
+
+        });
+
+    }
+
     public void onItemLongClick() {
 
         menuItemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -226,6 +279,15 @@ public class LoggedInScreenClient extends AppCompatActivity {
                 return true;
             }
         });
+
+        completedOrdersListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Order order = completedOrders.get(position);
+                showComplaintDialog(order);
+                return true;
+            }
+        });
     }
 
     public void logout(View v){
@@ -233,5 +295,7 @@ public class LoggedInScreenClient extends AppCompatActivity {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
+
+
 
 }
