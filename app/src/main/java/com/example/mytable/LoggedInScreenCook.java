@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,14 +38,17 @@ public class LoggedInScreenCook extends AppCompatActivity {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dbRef = database.getReference("users");
     private DatabaseReference dbRefMenus = database.getReference("menus");
-    TextView text, txtMealsOffered, txtUnavailableMeals;;
+    private DatabaseReference dbRefOrders = database.getReference("orders");
+    TextView text, txtMealsOffered, txtUnavailableMeals;
     String id, welcomeText = null;
     User user;
     Button btnLogout, buttonOpenAddMenuItemPopup;
-    DataSnapshot dbSnapshot;
+    DataSnapshot dbSnapshot, userSnapshot;
     List<MenuItem> menuItemList, menuItemList2;
-    ListView menuListView, menuListView2;
+    ListView menuListView, menuListView2, orderListView;
     MenuItemList adapter, adapter2;
+    List<Order> pendingOrders;
+    OrderList pendingOrderListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,9 @@ public class LoggedInScreenCook extends AppCompatActivity {
         Bundle bundle = i.getExtras();
         menuListView = (ListView) findViewById(R.id.menuList);
         menuListView2 = (ListView) findViewById(R.id.menuList2);
+        orderListView = (ListView) findViewById(R.id.cookPendingOrders);
         buttonOpenAddMenuItemPopup = (Button) findViewById(R.id.buttonOpenAddMenuItemPopup);
+
         if (bundle != null){
             id = (String) bundle.get("id");
         }
@@ -141,6 +148,41 @@ public class LoggedInScreenCook extends AppCompatActivity {
                 Log.w(TAG, "loadPost:onCancelled", error.toException());
             }
         });
+        dbRefOrders.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DataSnapshot orderSnapshot = snapshot;
+                pendingOrders = new ArrayList<Order>();
+                Iterable<DataSnapshot> ordersIterable = orderSnapshot.getChildren();
+
+                for (DataSnapshot order : ordersIterable) {
+                    Order tempOrder = order.getValue(Order.class);
+                    if (tempOrder.getCookId().equals(id) && tempOrder.getStatus().equals("PENDING")) {
+                        pendingOrders.add(tempOrder);
+                    }
+                }
+                pendingOrderListAdapter = new OrderList(LoggedInScreenCook.this, pendingOrders);
+                orderListView.setAdapter(pendingOrderListAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String TAG = "Couldn't fetch orders";
+                Log.w(TAG, "loadPost:onCancelled", error.toException());
+            }
+        });
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                userSnapshot = snapshot;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String TAG = "Couldn't fetch users";
+                Log.w(TAG, "loadPost:onCancelled", error.toException());
+            }
+        });
     }
 
     public void logout(View v){
@@ -170,6 +212,16 @@ public class LoggedInScreenCook extends AppCompatActivity {
                 return true;
             }
         });
+
+        orderListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Order order = pendingOrders.get(i);
+
+                showOrderDecisionDialog(order);
+                return true;
+            }
+        });
     }
 
     private void showMenuItemUpdateDialog(MenuItem menuItem) {
@@ -183,6 +235,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
         final EditText editMenuItemName = (EditText) dialogView.findViewById(R.id.editMenuItemName);
         final EditText editMenuItemDescription = (EditText) dialogView.findViewById(R.id.editMenuItemDescription);
         final EditText editMenuItemPrice = (EditText) dialogView.findViewById(R.id.editMenuItemPrice);
+        final EditText editMenuItemCuisineType = (EditText) dialogView.findViewById(R.id.editMenuItemCuisineType);
+        final EditText editMenuItemMealType = (EditText) dialogView.findViewById(R.id.editMenuItemMealType);
         final Button buttonUpdateMenuItem = (Button) dialogView.findViewById(R.id.buttonUpdateMenuItem);
         final Button buttonDeleteMenuItem = (Button) dialogView.findViewById(R.id.buttonDeleteMenuItem);
         final Switch switchMenuItemIsOfferedUpdate = (Switch) dialogView.findViewById(R.id.switchMenuItemIsOfferedUpdate);
@@ -191,6 +245,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
         editMenuItemName.setText(menuItem.getName());
         editMenuItemDescription.setText(menuItem.getDescription());
         editMenuItemPrice.setText(menuItem.getPrice());
+        editMenuItemCuisineType.setText(menuItem.getCuisineType());
+        editMenuItemMealType.setText(menuItem.getMealType());
         switchMenuItemIsOfferedUpdate.setChecked(menuItem.getIsOffered());
 
         TextView txtTitle = new TextView(this);
@@ -214,6 +270,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
                     dbRefMenus.child(id).child(menuItem.getId()).child("description").setValue(editMenuItemDescription.getText().toString());
                     dbRefMenus.child(id).child(menuItem.getId()).child("price").setValue(editMenuItemPrice.getText().toString());
                     dbRefMenus.child(id).child(menuItem.getId()).child("isOffered").setValue(switchMenuItemIsOfferedUpdate.isChecked());
+                    dbRefMenus.child(id).child(menuItem.getId()).child("cuisineType").setValue(editMenuItemCuisineType.getText().toString());
+                    dbRefMenus.child(id).child(menuItem.getId()).child("mealType").setValue(editMenuItemMealType.getText().toString());
                     b.hide();
                 } else{
                     invalidMenuItemFields2.setVisibility(invalidMenuItemFields2.VISIBLE);
@@ -250,6 +308,8 @@ public class LoggedInScreenCook extends AppCompatActivity {
         TextView invalidMenuItemFields = dialogView.findViewById(R.id.invalidMenuItemFields);
         final EditText addMenuItemDescription = (EditText) dialogView.findViewById(R.id.addMenuItemDescription);
         final EditText addMenuItemPrice = (EditText) dialogView.findViewById(R.id.addMenuItemPrice);
+        final EditText addMenuItemCuisineType = (EditText) dialogView.findViewById(R.id.addMenuItemCuisineType);
+        final EditText addMenuItemMealType = (EditText) dialogView.findViewById(R.id.addMenuItemMealType);
         final Button buttonAddMenuItem = (Button) dialogView.findViewById(R.id.buttonAddMenuItem);
         final Switch switchMenuItemIsOfferedAdd = (Switch) dialogView.findViewById(R.id.switchMenuItemIsOfferedAdd);
 
@@ -268,10 +328,22 @@ public class LoggedInScreenCook extends AppCompatActivity {
         buttonAddMenuItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MenuItem menuItem = new MenuItem(addMenuItemName.getText().toString(), addMenuItemDescription.getText().toString(), addMenuItemPrice.getText().toString(), switchMenuItemIsOfferedAdd.isChecked());
+                MenuItem menuItem = new MenuItem(
+                        addMenuItemName.getText().toString(),
+                        addMenuItemDescription.getText().toString(),
+                        addMenuItemPrice.getText().toString(),
+                        addMenuItemCuisineType.getText().toString(),
+                        addMenuItemMealType.getText().toString(),
+                        switchMenuItemIsOfferedAdd.isChecked());
                 String itemId = dbRefMenus.child(id).push().getKey();
                 menuItem.setId(itemId);
-                if (!addMenuItemName.getText().toString().equals("") && !addMenuItemDescription.getText().toString().equals("") && addMenuItemPrice.getText().toString().matches("-?\\d+(\\.\\d+)?")){
+                menuItem.setCookId(id);
+                if (
+                        !addMenuItemName.getText().toString().equals("")
+                        && !addMenuItemDescription.getText().toString().equals("")
+                        && addMenuItemPrice.getText().toString().matches("-?\\d+(\\.\\d+)?")
+                        && !addMenuItemCuisineType.getText().toString().equals("")
+                        && !addMenuItemMealType.getText().toString().equals("")){
                     dbRefMenus.child(id).child(itemId).setValue(menuItem);
                     b.hide();
                 } else{
@@ -283,5 +355,58 @@ public class LoggedInScreenCook extends AppCompatActivity {
 
 
     }
+
+    public void showOrderDecisionDialog(Order order) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.order_decision_popup, null);
+        dialogBuilder.setView(dialogView);
+
+
+
+        final TextView clientName = dialogView.findViewById(R.id.orderClientName);
+        final TextView clientRating = dialogView.findViewById(R.id.orderClientRating);
+        final TextView orderMenuItemName = dialogView.findViewById(R.id.orderMenuItemName);
+        final Button acceptOrder = dialogView.findViewById(R.id.buttonAcceptOrder);
+        final Button rejectOrder = dialogView.findViewById(R.id.buttonRejectOrder);
+
+        Client client = userSnapshot.child(order.getClientId()).getValue(Client.class);
+
+        TextView txtTitle = new TextView(this);
+        txtTitle.setText("Make Decision");
+        txtTitle.setGravity(Gravity.CENTER);
+
+        clientRating.setText("Rating: " + client.getClientRating());
+        clientName.setText("Name: " + client.getFirstName() + " " + client.getLastName());
+        orderMenuItemName.setText("Menu Item: " + order.getItemName());
+
+
+        dialogBuilder.setCustomTitle(txtTitle);
+        final AlertDialog b = dialogBuilder.create();
+        b.show();
+
+
+
+        acceptOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dbRefOrders.child(order.getId()).child("status").setValue("ACCEPTED");
+                b.dismiss();
+            }
+        });
+
+        rejectOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dbRefOrders.child(order.getId()).child("status").setValue("REJECTED");
+                b.dismiss();
+            }
+        });
+
+
+    }
+
+
 
 }

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clientLoggedInScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_main"
@@ -13,12 +14,60 @@
         android:gravity="center|center_horizontal"
         android:orientation="vertical">
 
+
         <TextView
-            android:id="@+id/txtWelcomeClient"
-            android:layout_width="191dp"
-            android:layout_height="50dp"
+            android:id="@+id/clientWelcomeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Meals" />
+
+        <ListView
+            android:id="@+id/clientMealsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </ListView>
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pending Orders" />
+
+        <ListView
+            android:id="@+id/clientPendingOrdersList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+        </ListView>
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Completed Orders" />
+
+        <ListView
+            android:id="@+id/clientCompletedOrdersList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="TextView" />
 
+        <ListView
+            android:id="@+id/clientRejectedOrdersList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btnLogout"
@@ -26,7 +75,6 @@
             android:layout_height="wrap_content"
             android:onClick="logout"
             android:text="LOG OUT" />
-
 
 
     </LinearLayout>

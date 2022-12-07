@@ -4,7 +4,7 @@ import android.content.Context;
 
 public class Client extends User{
     private Address clientAddress;
-    private int cardCVC;
+    private int cardCVC, clientRating;
     private long cardNumber;
     private String cardHolderName, cardExpirationDateMonth, cardExpirationDateYear, cardExpirationDate;
 
@@ -98,5 +98,13 @@ public class Client extends User{
             this.cardExpirationDateYear = cardExpirationDateYear;
             return(true);
         }
+    }
+
+    public int getClientRating() {
+        return clientRating;
+    }
+
+    public void setClientRating(int clientRating) {
+        this.clientRating = clientRating;
     }
 }
