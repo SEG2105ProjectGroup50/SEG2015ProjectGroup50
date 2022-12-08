@@ -25,6 +25,8 @@ public class MenuItemList extends ArrayAdapter<MenuItem>{
 
         TextView menuItemName = (TextView) listViewItem.findViewById(R.id.menuItemName);
         TextView menuItemDescription = (TextView) listViewItem.findViewById(R.id.menuItemDescription);
+        TextView menuItemCuisineType = listViewItem.findViewById(R.id.menuItemCuisineType);
+        TextView menuItemMealType = listViewItem.findViewById(R.id.menuItemMealType);
         TextView menuItemPrice = (TextView) listViewItem.findViewById(R.id.menuItemPrice);
         TextView menuItemIsOffered = (TextView) listViewItem.findViewById(R.id.menuItemIsOffered);
 
@@ -32,6 +34,8 @@ public class MenuItemList extends ArrayAdapter<MenuItem>{
 
         menuItemName.setText(menuItem.getName());
         menuItemDescription.setText(menuItem.getDescription());
+        menuItemCuisineType.setText(menuItem.getCuisineType());
+        menuItemMealType.setText(menuItem.getMealType());
         menuItemPrice.setText(menuItem.getPrice());
         if (menuItem.getIsOffered()) {
             menuItemIsOffered.setText("Yes");

@@ -9,10 +9,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +29,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoggedInScreenClient extends AppCompatActivity {
 
@@ -40,18 +45,20 @@ public class LoggedInScreenClient extends AppCompatActivity {
     Button buttonManageComplaints;
     Button btnLogout;
     List<MenuItem> menuItemList;
+    List<MenuItem> filteredItemList = new ArrayList<MenuItem>();;
     MenuItemList menuItemListAdapter;
     ListView menuItemListView, pendingOrdersListView, completedOrdersListView, rejectedOrdersListView;
     DataSnapshot usersDbSnapshot, complaintsSnapshot;
     List<Order> pendingOrders, completedOrders, rejectedOrders;
     OrderList pendingOrdersListAdapter, completedOrdersListAdapter, rejectedOrdersListAdapter;
-
-
+    SearchView searchView;
+    int mealsSold, currentRating, avgRating, newCookRating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.logged_in_screen_client);
+        searchView = findViewById(R.id.searchView);
         btnLogout = (Button) findViewById(R.id.btnLogout);
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
@@ -175,6 +182,32 @@ public class LoggedInScreenClient extends AppCompatActivity {
                 Log.w(TAG, "loadPost:onCancelled", error.toException());
             }
         });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filteredItemList.clear();
+                if (!newText.isEmpty()){
+                    for (MenuItem item : menuItemList){
+                        if (item.getName().contains(newText) || item.getMealType().contains(newText)
+                                || item.getCuisineType().contains(newText)){
+                            filteredItemList.add(item);
+                        }
+                    }
+                    menuItemListAdapter = new MenuItemList(LoggedInScreenClient.this, filteredItemList);
+                } else {
+                    menuItemListAdapter = new MenuItemList(LoggedInScreenClient.this, menuItemList);
+                }
+                menuItemListView.setAdapter(menuItemListAdapter);
+                menuItemListAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
     }
 
     private void showOrderDialog(MenuItem menuItem) {
@@ -238,8 +271,9 @@ public class LoggedInScreenClient extends AppCompatActivity {
 
         final TextView title = dialogView.findViewById(R.id.clientComplaintTitle);
         final TextView description = dialogView.findViewById(R.id.clientComplaintDescription);
+        final EditText newRating = dialogView.findViewById(R.id.mealRating);
         final Button submitComplaint = dialogView.findViewById(R.id.buttonSubmitComplaint);
-
+        final Button rateMeal = dialogView.findViewById(R.id.buttonRateMeal);
 
         TextView txtTitle = new TextView(this);
         txtTitle.setText("Make a Complaint");
@@ -266,6 +300,21 @@ public class LoggedInScreenClient extends AppCompatActivity {
 
         });
 
+        rateMeal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (newRating.getText().toString().matches("\\d")){
+                    newCookRating = Integer.parseInt(newRating.getText().toString());
+                }
+                System.out.println(newCookRating);
+                mealsSold = usersDbSnapshot.child(order.getCookId()).child("mealsSold").getValue(Integer.class);
+                currentRating = usersDbSnapshot.child(order.getCookId()).child("cookRating").getValue(Integer.class);
+                avgRating = (currentRating + newCookRating) / mealsSold;
+                dbRefUsers.child(order.getCookId()).child("cookRating").setValue(avgRating);
+                b.hide();
+            }
+        });
+
     }
 
     public void onItemLongClick() {
@@ -274,7 +323,6 @@ public class LoggedInScreenClient extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MenuItem menuItem = menuItemList.get(i);
-
                 showOrderDialog(menuItem);
                 return true;
             }
