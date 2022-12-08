@@ -194,8 +194,9 @@ public class LoggedInScreenClient extends AppCompatActivity {
                 filteredItemList.clear();
                 if (!newText.isEmpty()){
                     for (MenuItem item : menuItemList){
-                        if (item.getName().contains(newText) || item.getMealType().contains(newText)
-                                || item.getCuisineType().contains(newText)){
+                        if (item.getName().toLowerCase().contains(newText.toLowerCase())
+                                || item.getMealType().toLowerCase().contains(newText.toLowerCase())
+                                || item.getCuisineType().toLowerCase().contains(newText.toLowerCase())){
                             filteredItemList.add(item);
                         }
                     }
