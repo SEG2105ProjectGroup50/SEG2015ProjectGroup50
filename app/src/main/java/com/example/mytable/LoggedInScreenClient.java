@@ -296,6 +296,7 @@ public class LoggedInScreenClient extends AppCompatActivity {
                 complaint.setDescription(description.getText().toString());
                 complaint.setStatus("PENDING");
                 dbRefComplaints.child(complaintId).setValue(complaint);
+                b.hide();
             }
 
         });
