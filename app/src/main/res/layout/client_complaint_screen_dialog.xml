@@ -41,5 +41,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Submit Complaint" />
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rate meal" />
+
+        <EditText
+            android:id="@+id/mealRating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Enter meal rating (1 through 5)" />
+
+        <Button
+            android:id="@+id/buttonRateMeal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rate Meal" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

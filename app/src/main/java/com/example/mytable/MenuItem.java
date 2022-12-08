@@ -18,6 +18,8 @@ public class MenuItem {
         description = "";
         price = "0.00";
         isOffered = false;
+        mealType = "default";
+        cuisineType = "default";
     }
 
     public MenuItem(String name, String description, String price, String cuisineType, String mealType, boolean isOffered) {

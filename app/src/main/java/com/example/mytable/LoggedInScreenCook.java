@@ -49,6 +49,7 @@ public class LoggedInScreenCook extends AppCompatActivity {
     MenuItemList adapter, adapter2;
     List<Order> pendingOrders;
     OrderList pendingOrderListAdapter;
+    int mealsSold;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +184,12 @@ public class LoggedInScreenCook extends AppCompatActivity {
                 Log.w(TAG, "loadPost:onCancelled", error.toException());
             }
         });
+    }
+
+    public void viewProfile(View v){
+        Intent i = new Intent(this, CookProfileActivity.class);
+        i.putExtra("id", id);
+        startActivity(i);
     }
 
     public void logout(View v){
@@ -386,12 +393,14 @@ public class LoggedInScreenCook extends AppCompatActivity {
         final AlertDialog b = dialogBuilder.create();
         b.show();
 
-
+        mealsSold = userSnapshot.child(order.getCookId()).child("mealsSold").getValue(Integer.class);
 
         acceptOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mealsSold++;
                 dbRefOrders.child(order.getId()).child("status").setValue("ACCEPTED");
+                dbRef.child(order.getCookId()).child("mealsSold").setValue(mealsSold);
                 b.dismiss();
             }
         });
